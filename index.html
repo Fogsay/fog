@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOGWALKER</title>
+    <title>FOG WALKER</title>
     <!-- 引入Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入Font Awesome -->
@@ -72,7 +72,7 @@
             background-color: #050505;
         }
         
-        /* 打字光标动画 - 调整为8px宽度 */
+        /* 打字光标动画 - 改为右下角闪烁点 */
         .typing-container {
             position: relative;
             display: inline-block;
@@ -81,12 +81,13 @@
         
         .typing-cursor {
             position: absolute;
-            top: 0;
-            right: -8px;
-            width: 8px; /* 调整光标宽度为8px */
-            height: 100%;
+            bottom: 4px; /* 调整垂直位置，与文字基线对齐 */
+            right: -4px; /* 调整水平位置 */
+            width: 8px; /* 点的宽度 */
+            height: 8px; /* 点的高度 */
             background-color: #00c8ff;
-            animation: blink 0.8s step-end infinite;
+            border-radius: 20%; /* 圆形光标 */
+            animation: blink 1s step-end infinite;
             will-change: opacity; /* 优化动画性能 */
         }
         
@@ -117,8 +118,8 @@
             }
             
             /* 调整角落装饰大小 */
-            .fixed.top-6.left-6,
-            .fixed.bottom-6.right-6 {
+            .fixed.top-4.left-4,
+            .fixed.bottom-4.right-4 {
                 width: 12px;
                 height: 12px;
             }
@@ -163,7 +164,7 @@
     </div>
 
     <script>
-        // 打字效果实现（移动端优化版）
+        // 打字效果实现（优化光标版）
         document.addEventListener('DOMContentLoaded', function() {
             // 文本结构：普通文本 + 红色FOG + 普通文本
             const textSegments = [
