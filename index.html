@@ -1,4 +1,86 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOGWALKER</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        accent: '#00c8ff',
+                        dark: '#050505',
+                        light: '#ffffff',
+                        red: '#ff0000'
+                    },
+                    fontFamily: {
+                        rounded: ['"Fredoka One"', 'cursive'],
+                        sans: ['Nunito', 'sans-serif'],
+                        mono: ['Nunito', 'monospace']
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                        'pulse-soft': 'pulseSoft 4s infinite',
+                        'border-pulse': 'borderPulse 2s infinite'
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        pulseSoft: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.6' }
+                        },
+                        borderPulse: {
+                            '0%, 100%': { border-color: 'rgba(0, 200, 255, 0.5)' },
+                            '50%': { border-color: 'rgba(0, 200, 255, 0.9)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 0 0 15px rgba(0, 200, 255, 0.3);
+            }
+            .grid-pattern {
+                background-image: radial-gradient(rgba(0, 200, 255, 0.1) 1px, transparent 1px);
+                background-size: 20px 20px;
+            }
+        }
+    </style>
+    
+    <style>
+        /* 导入圆润字体 */
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap');
+        
+        /* 基础样式 */
+        body {
+            overflow: hidden;
+            background-color: #050505;
+        }
+        
+        /* 打字容器样式（移除光标相关） */
+        .typing-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        /* 背景装饰动画 */
+        .bg-animate {
+            animation: bgShift 15s ease-in-out infinite;
         }
         
         @keyframes bgShift {
