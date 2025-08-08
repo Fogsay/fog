@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOG WALKER</title>
+    <title>FOGWALKER</title>
     <!-- 引入Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入Font Awesome -->
@@ -72,23 +72,25 @@
             background-color: #050505;
         }
         
-        /* 打字光标动画 - 改为右下角闪烁点 */
+        /* 打字光标动画 - 调整为文字右下角 */
         .typing-container {
             position: relative;
             display: inline-block;
-            min-width: 10px; /* 确保容器始终有宽度 */
+            min-width: 10px;
         }
         
         .typing-cursor {
-            position: absolute;
-            bottom: 4px; /* 调整垂直位置，与文字基线对齐 */
-            right: -4px; /* 调整水平位置 */
-            width: 8px; /* 点的宽度 */
-            height: 8px; /* 点的高度 */
+            width: 12px;
+            height: 12px;
             background-color: #00c8ff;
-            border-radius: 20%; /* 圆形光标 */
+            border-radius: 30%;
             animation: blink 1s step-end infinite;
-            will-change: opacity; /* 优化动画性能 */
+            will-change: opacity;
+            
+            /* 调整定位至文字右下角 */
+            position: absolute;
+            bottom: 0.7em; /* 向上调整，远离底部边缘 */
+            right: -0.9em; /* 向右调整，更靠近字符右侧 */
         }
         
         @keyframes blink {
@@ -111,17 +113,16 @@
             color: #ff0000 !important;
         }
 
-        /* 移动端适配补充样式 */
+        /* 移动端适配 */
         @media (max-width: 640px) {
-            .typing-container {
-                transform-origin: center;
-            }
-            
-            /* 调整角落装饰大小 */
             .fixed.top-4.left-4,
             .fixed.bottom-4.right-4 {
                 width: 12px;
                 height: 12px;
+            }
+            
+            .typing-cursor {
+                transform: scale(1);
             }
         }
     </style>
@@ -140,7 +141,6 @@
         <!-- 标题区域 - 优化移动端显示 -->
         <div class="mb-6 overflow-visible">
             <div class="typing-container">
-                <!-- 优化字体大小范围，确保移动端适配 -->
                 <div id="typed-text" class="text-[clamp(2rem,8vw,7rem)] font-rounded font-bold text-white text-shadow leading-none inline-block"></div>
                 <span class="typing-cursor"></span>
             </div>
@@ -164,9 +164,8 @@
     </div>
 
     <script>
-        // 打字效果实现（优化光标版）
+        // 打字效果实现
         document.addEventListener('DOMContentLoaded', function() {
-            // 文本结构：普通文本 + 红色FOG + 普通文本
             const textSegments = [
                 "I'M ",
                 { content: "FOG", color: "text-red" },
@@ -177,45 +176,38 @@
             const cursorElement = document.querySelector('.typing-cursor');
             let segmentIndex = 0;
             let charIndex = 0;
-            const typingDelay = 150; // 打字速度（毫秒）
+            const typingDelay = 150;
             
-            // 优化的打字函数，确保所有字符正确显示
             function typeCharacter() {
                 if (segmentIndex < textSegments.length) {
                     const currentSegment = textSegments[segmentIndex];
                     
                     if (typeof currentSegment === 'string') {
-                        // 处理普通文本
                         if (charIndex < currentSegment.length) {
                             typedElement.innerHTML += currentSegment.charAt(charIndex);
                             charIndex++;
                             setTimeout(typeCharacter, typingDelay);
                         } else {
-                            // 移动到下一段
                             segmentIndex++;
                             charIndex = 0;
                             setTimeout(typeCharacter, typingDelay);
                         }
                     } else {
-                        // 处理带颜色的文本（FOG）
                         if (charIndex < currentSegment.content.length) {
                             typedElement.innerHTML += `<span class="${currentSegment.color} font-rounded">${currentSegment.content.charAt(charIndex)}</span>`;
                             charIndex++;
                             setTimeout(typeCharacter, typingDelay);
                         } else {
-                            // 移动到下一段
                             segmentIndex++;
                             charIndex = 0;
                             setTimeout(typeCharacter, typingDelay);
                         }
                     }
                 } else {
-                    // 打字完成后确保光标保持显示
                     cursorElement.style.display = 'block';
                 }
             }
             
-            // 开始打字动画
             setTimeout(typeCharacter, 600);
         });
     </script>
