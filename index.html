@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fogwalker</title>
+    <!-- 引入圆润风格字体 Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            overflow: hidden;
+            position: relative;
+            background: #0f0f23;
+        }
+
+        /* 现代渐变背景 - 扩展范围使宽屏更协调 */
+        .modern-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                #667eea 0%, 
+                #764ba2 25%, 
+                #f093fb 50%, 
+                #f5576c 75%, 
+                #4facfe 100%);
+            background-size: 600% 600%; /* 扩大渐变范围 */
+            animation: modernGradient 15s ease-in-out infinite;
+            opacity: 0.1;
+        }
+
+        @keyframes modernGradient {
+            0%, 100% { background-position: 0% 50%; }
+            25% { background-position: 100% 0%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+        }
+
+        /* 几何图形背景 - 扩大尺寸适应宽屏 */
+        .geometric-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            z-index: 1;
+        }
+
+        .geo-shape {
+            position: absolute;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: rotate 25s linear infinite; /* 减慢动画速度更显大气 */
+        }
+
+        .shape1 {
+            width: 400px; /* 增大尺寸 */
+            height: 400px;
+            top: -10%;
+            left: 5%;
+            border-radius: 50%;
+            animation-delay: 0s;
+        }
+
+        .shape2 {
+            width: 300px;
+            height: 300px;
+            top: 50%;
+            right: 5%;
+            transform: rotate(45deg) translateY(-50%);
+            animation-delay: 8s;
+        }
+
+        .shape3 {
+            width: 200px;
+            height: 200px;
+            bottom: 10%;
+            left: 30%;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            animation-delay: 15s;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 现代光效 - 扩大光晕范围 */
+        .modern-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .glow-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px); /* 增加模糊度 */
+            animation: modernFloat 12s ease-in-out infinite;
+        }
+
+        .glow1 {
+            width: 600px; /* 大幅扩大光晕 */
+            height: 600px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.3), transparent);
+            top: -20%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+
+        .glow2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(245, 87, 108, 0.25), transparent);
+            bottom: -20%;
+            right: -10%;
+            animation-delay: 5s;
+        }
+
+        .glow3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(79, 172, 254, 0.3), transparent);
+            top: 30%;
+            left: 60%;
+            animation-delay: 8s;
+        }
+
+        @keyframes modernFloat {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 0.3;
+            }
+            33% { 
+                transform: translate(50px, -30px) scale(1.1);
+                opacity: 0.5;
+            }
+            66% { 
+                transform: translate(-30px, 50px) scale(0.9);
+                opacity: 0.2;
+            }
+        }
+
+        /* 微粒系统 - 增加粒子数量 */
+        .particle-system {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+        }
+
+        .particle {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: particleMove 12s linear infinite;
+        }
+
+        @keyframes particleMove {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            z-index: 10;
+            padding: 0 5%; /* 增加左右内边距，适应宽屏 */
+        }
+
+        .editor-window {
+            background: rgba(15, 15, 35, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 25px 80px rgba(0, 0, 0, 0.35),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            width: 100%; /* 宽度设为100%，充分利用宽屏空间 */
+            max-width: 1400px; /* 最大宽度限制，避免过宽 */
+            min-width: 800px; /* 提高最小宽度 */
+        }
+
+        .editor-header {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 18px 32px; /* 增加内边距 */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .editor-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: none;
+        }
+
+        .close { background: #ff5f57; }
+        .minimize { background: #ffbd2e; }
+        .maximize { background: #28ca42; }
+
+        .editor-title {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .editor-info {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        .editor-content {
+            padding: 48px; /* 增加内边距 */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .line-numbers {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 16px;
+            margin-bottom: 10px;
+            user-select: none;
+        }
+
+        .code-line {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 18px; /* 增大代码字体 */
+            margin-bottom: 6px;
+        }
+
+        .main-text {
+            /* 应用圆润字体 */
+            font-family: 'Nunito', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 5rem); /* 增大字体范围 */
+            font-weight: 800; /* 提高字重更显大气 */
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 300% 300%;
+            animation: textGradient 4s ease-in-out infinite;
+            letter-spacing: -0.02em;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 0.5s forwards, textGradient 4s ease-in-out infinite;
+            min-height: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        @keyframes textGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 3px; /* 加粗光标 */
+            height: 1em;
+            background: #667eea;
+            margin-left: 3px;
+            animation: modernBlink 1.2s infinite;
+            vertical-align: text-bottom;
+        }
+
+        @keyframes modernBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .fade-out {
+            animation: modernFadeOut 0.8s ease-in-out forwards;
+        }
+
+        .fade-in {
+            animation: modernFadeIn 0.8s ease-in-out forwards;
+        }
+
+        @keyframes modernFadeOut {
+            to { 
+                opacity: 0; 
+                transform: translateY(-15px) scale(0.98);
+                filter: blur(1px);
+            }
+        }
+
+        @keyframes modernFadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(15px) scale(0.98);
+                filter: blur(1px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        /* 宽屏优化的响应式设计 */
+        @media (max-width: 1200px) {
+            .editor-window {
+                min-width: 700px;
+            }
+            
+            .main-text {
+                font-size: clamp(2.2rem, 6vw, 4rem);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .editor-window {
+                min-width: auto;
+                margin: 20px;
+                border-radius: 12px;
+            }
+            
+            .editor-content {
+                padding: 32px;
+            }
+            
+            .main-text {
+                font-size: clamp(1.8rem, 5vw, 3rem);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-text {
+                font-size: clamp(1.5rem, 4vw, 2.5rem);
+            }
+            
+            .editor-content {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="modern-bg"></div>
+    <div class="geometric-bg">
+        <div class="geo-shape shape1"></div>
+        <div class="geo-shape shape2"></div>
+        <div class="geo-shape shape3"></div>
+    </div>
+    <div class="modern-glow">
+        <div class="glow-element glow1"></div>
+        <div class="glow-element glow2"></div>
+        <div class="glow-element glow3"></div>
+    </div>
+    <div class="particle-system" id="particles"></div>
+    
+    <div class="container">
+        <div class="editor-window">
+            <div class="editor-header">
+                <div class="editor-controls">
+                    <button class="control-btn close"></button>
+                    <button class="control-btn minimize"></button>
+                    <button class="control-btn maximize"></button>
+                </div>
+                <div class="editor-title">identity.js</div>
+                <div class="editor-info">UTF-8</div>
+            </div>
+            <div class="editor-content">
+                <div class="line-numbers">1</div>
+                <div class="code-line">const identity = {</div>
+                <div class="line-numbers">2</div>
+                <div class="code-line">&nbsp;&nbsp;name:</div>
+                <div class="main-text" id="mainText"></div>
+                <div class="code-line">}</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 创建现代粒子系统 - 增加粒子数量适应宽屏
+        function createModernParticles() {
+            const particleSystem = document.getElementById('particles');
+            // 增加粒子数量到100个
+            for (let i = 0; i < 100; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 12 + 's';
+                particle.style.animationDuration = (Math.random() * 6 + 8) + 's';
+                particleSystem.appendChild(particle);
+            }
+        }
+
+        // 现代打字效果 - 调整速度
+        function modernType(element, text, speed = 70) {
+            return new Promise((resolve) => {
+                let i = 0;
+                const cursor = document.createElement('span');
+                cursor.className = 'cursor';
+                element.appendChild(cursor);
+                
+                function type() {
+                    if (i < text.length) {
+                        // 随机停顿模拟真实打字
+                        const delay = speed + Math.random() * 50;
+                        
+                        element.insertBefore(document.createTextNode(text.charAt(i)), cursor);
+                        i++;
+                        setTimeout(type, delay);
+                    } else {
+                        setTimeout(() => {
+                            element.removeChild(cursor);
+                            resolve();
+                        }, 1000); // 延长光标停留时间
+                    }
+                }
+                type();
+            });
+        }
+
+        // 中文打字效果 - 更慢的速度
+        function modernTypeSlowChinese(element, text) {
+            return new Promise((resolve) => {
+                let i = 0;
+                const cursor = document.createElement('span');
+                cursor.className = 'cursor';
+                element.appendChild(cursor);
+                
+                function type() {
+                    if (i < text.length) {
+                        // 中文打字使用更慢的速度，每个字符间隔200-300ms
+                        const delay = 200 + Math.random() * 100;
+                        
+                        element.insertBefore(document.createTextNode(text.charAt(i)), cursor);
+                        i++;
+                        setTimeout(type, delay);
+                    } else {
+                        setTimeout(() => {
+                            element.removeChild(cursor);
+                            resolve();
+                        }, 1000); // 延长光标停留时间
+                    }
+                }
+                type();
+            });
+        }
+
+        // 清除所有内容和样式类
+        function clearElement(element) {
+            element.textContent = '';
+            element.className = 'main-text'; // 重置为基础类
+        }
+
+        // 淡出效果
+        function fadeOut(element) {
+            return new Promise((resolve) => {
+                element.classList.add('fade-out');
+                setTimeout(() => {
+                    resolve();
+                }, 800);
+            });
+        }
+
+        // 主动画序列 - 确保打字特效
+        async function startModernAnimation() {
+            const mainText = document.getElementById('mainText');
+            
+            while (true) {
+                // 清空内容和样式
+                clearElement(mainText);
+                
+                // 等待初始加载
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // 打字显示英文
+                await modernType(mainText, '"I\'M FOGWALKER",');
+                
+                // 延长展示时间
+                await new Promise(resolve => setTimeout(resolve, 3500));
+                
+                // 淡出当前文本
+                await fadeOut(mainText);
+                
+                // 清空内容和样式，准备中文打字
+                clearElement(mainText);
+                
+                // 短暂延迟后开始中文打字
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                // 打字显示中文 - 使用更慢的打字速度
+                await modernTypeSlowChinese(mainText, '"我是雾行者",');
+                
+                // 延长展示时间
+                await new Promise(resolve => setTimeout(resolve, 4000));
+            }
+        }
+
+        // 初始化
+        window.addEventListener('load', () => {
+            createModernParticles();
+            startModernAnimation();
+        });
+    </script>
+</body>
+</html>
