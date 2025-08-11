@@ -451,6 +451,35 @@
     <div class="fixed top-4 left-4 w-12 md:w-16 h-12 md:h-16 border-t-2 border-l-2 border-accent/30"></div>
     <div class="fixed bottom-4 right-4 w-12 md:w-16 h-12 md:h-16 border-b-2 border-r-2 border-accent/30"></div>
     
+    <!-- 隐藏的背景音乐 -->
+    <audio id="background-music" loop preload="auto" style="display: none;">
+        <source src="https://cdn.pixabay.com/audio/2025/03/19/audio_56ae1dae5f.mp3" type="audio/mpeg">
+
+        <!-- 备用音乐链接 -->
+        <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/Creative_Commons/Chad_Crouch/Arps/Chad_Crouch_-_Shipping_Lanes.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 音乐控制按钮 -->
+    <div id="music-control" style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        width: 40px;
+        height: 40px;
+        background: rgba(160, 160, 160, 0.15);
+        border: 1px solid rgba(180, 180, 180, 0.3);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    " title="点击控制音乐">
+        <i id="music-icon" class="fa fa-volume-up" style="color: #b0b0b0; font-size: 16px;"></i>
+    </div>
+
     <!-- 主内容 -->
     <div class="relative z-10 text-center max-w-full mx-auto">
         <!-- 标题区域 -->
@@ -467,7 +496,7 @@
         
         <!-- 互动按钮 -->
         <div class="opacity-0 animate-fade-in-up" style="animation-delay: 3.2s;">
-            <button class="group relative px-6 py-3 sm:px-8 sm:py-3 border border-accent/50 text-accent uppercase tracking-wider text-sm hover:bg-accent hover:text-dark transition-all duration-300 overflow-hidden">
+            <button id="enter-button" class="group relative px-6 py-3 sm:px-8 sm:py-3 border border-accent/50 text-accent uppercase tracking-wider text-sm hover:bg-accent hover:text-dark transition-all duration-300 overflow-hidden">
                 <span class="relative z-10 flex items-center justify-center">
                     ENTER
                     <i class="fa fa-chevron-right ml-2 group-hover:ml-3 transition-all"></i>
@@ -645,9 +674,182 @@
             }, 600);
         });
 
-        // 15秒后自动打开新标签页
+        // 创建交互式提示框
+        function showNavigationPrompt() {
+            console.log('显示导航提示框'); // 调试信息
+            
+            // 创建提示框容器
+            const promptContainer = document.createElement('div');
+            promptContainer.id = 'navigation-prompt';
+            promptContainer.style.cssText = `
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 9999;
+                transform: translateY(100%);
+                transition: transform 0.5s ease-out;
+                background: rgba(5, 5, 5, 0.95);
+                backdrop-filter: blur(10px);
+                border-top: 1px solid rgba(0, 200, 255, 0.3);
+                padding: 20px;
+            `;
+            
+            // 提示框内容
+            promptContainer.innerHTML = `
+                <div style="max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+                    <div style="text-align: left;">
+                        <h3 style="color: white; font-size: 18px; margin: 0 0 8px 0; font-weight: bold;">准备进入新世界？</h3>
+                        <p style="color: #9ca3af; font-size: 14px; margin: 0;">点击确认将在新标签页中打开 雾行者 的博客</p>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button id="cancel-nav" style="
+                            padding: 8px 16px;
+                            border: 1px solid #6b7280;
+                            background: transparent;
+                            color: #d1d5db;
+                            cursor: pointer;
+                            font-size: 14px;
+                            transition: all 0.3s;
+                        ">取消</button>
+                        <button id="confirm-nav" style="
+                            padding: 8px 20px;
+                            background: #00c8ff;
+                            color: #050505;
+                            border: none;
+                            cursor: pointer;
+                            font-size: 14px;
+                            font-weight: 500;
+                            transition: all 0.3s;
+                        ">确认打开</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(promptContainer);
+            
+            // 显示动画
+            setTimeout(() => {
+                promptContainer.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // 绑定事件
+            document.getElementById('confirm-nav').addEventListener('click', () => {
+                console.log('用户点击确认'); // 调试信息
+                window.open('https://hi.imfog.com', '_blank');
+                hideNavigationPrompt();
+            });
+            
+            document.getElementById('cancel-nav').addEventListener('click', () => {
+                console.log('用户点击取消'); // 调试信息
+                hideNavigationPrompt();
+            });
+            
+            // 10秒后自动隐藏
+            setTimeout(() => {
+                if (document.getElementById('navigation-prompt')) {
+                    console.log('自动隐藏提示框'); // 调试信息
+                    hideNavigationPrompt();
+                }
+            }, 10000);
+        }
+
+        // 隐藏提示框
+        function hideNavigationPrompt() {
+            const promptContainer = document.getElementById('navigation-prompt');
+            if (promptContainer) {
+                promptContainer.style.transform = 'translateY(100%)';
+                setTimeout(() => {
+                    if (promptContainer.parentNode) {
+                        promptContainer.parentNode.removeChild(promptContainer);
+                    }
+                }, 500);
+            }
+        }
+
+        // 背景音乐控制
+        let isPlaying = false;
+        const backgroundMusic = document.getElementById('background-music');
+        const musicControl = document.getElementById('music-control');
+        const musicIcon = document.getElementById('music-icon');
+
+        // 音乐控制功能
+        function toggleMusic() {
+            if (isPlaying) {
+                backgroundMusic.pause();
+                musicIcon.className = 'fa fa-volume-off';
+                musicControl.style.background = 'rgba(100, 100, 100, 0.15)';
+                musicControl.style.borderColor = 'rgba(120, 120, 120, 0.3)';
+                musicIcon.style.color = '#808080';
+                isPlaying = false;
+                console.log('音乐已暂停');
+            } else {
+                backgroundMusic.play().then(() => {
+                    musicIcon.className = 'fa fa-volume-up';
+                    musicControl.style.background = 'rgba(180, 180, 180, 0.2)';
+                    musicControl.style.borderColor = 'rgba(200, 200, 200, 0.4)';
+                    musicIcon.style.color = '#c0c0c0';
+                    isPlaying = true;
+                    console.log('音乐开始播放');
+                }).catch(error => {
+                    console.log('音乐播放失败:', error);
+                    // 如果自动播放失败，显示提示
+                    musicControl.style.background = 'rgba(160, 160, 160, 0.2)';
+                    musicControl.style.borderColor = 'rgba(180, 180, 180, 0.4)';
+                    musicIcon.style.color = '#a0a0a0';
+                    musicIcon.className = 'fa fa-music';
+                });
+            }
+        }
+
+        // 绑定音乐控制按钮事件
+        musicControl.addEventListener('click', toggleMusic);
+
+        // 绑定ENTER按钮事件，点击时开始播放音乐
+        const enterButton = document.getElementById('enter-button');
+        let musicStarted = false;
+        
+        enterButton.addEventListener('click', () => {
+            console.log('用户点击ENTER按钮，开始播放音乐');
+            if (!musicStarted && !isPlaying) {
+                toggleMusic();
+                musicStarted = true;
+            }
+        });
+
+        // 监听任何用户交互来启动音乐（一次性）
+        function startMusicOnFirstInteraction() {
+            if (!musicStarted && !isPlaying) {
+                console.log('检测到用户交互，自动开始播放音乐');
+                toggleMusic();
+                musicStarted = true;
+                // 移除事件监听器，只执行一次
+                document.removeEventListener('click', startMusicOnFirstInteraction);
+                document.removeEventListener('keydown', startMusicOnFirstInteraction);
+                document.removeEventListener('touchstart', startMusicOnFirstInteraction);
+            }
+        }
+
+        // 添加多种交互事件监听
+        document.addEventListener('click', startMusicOnFirstInteraction);
+        document.addEventListener('keydown', startMusicOnFirstInteraction);
+        document.addEventListener('touchstart', startMusicOnFirstInteraction);
+
+        // 音乐控制按钮悬停效果
+        musicControl.addEventListener('mouseenter', () => {
+            musicControl.style.transform = 'scale(1.1)';
+            musicControl.style.boxShadow = '0 0 15px rgba(180, 180, 180, 0.3)';
+        });
+
+        musicControl.addEventListener('mouseleave', () => {
+            musicControl.style.transform = 'scale(1)';
+            musicControl.style.boxShadow = 'none';
+        });
+
+        // 10秒后显示交互式提示框
+        console.log('页面加载完成，10秒后显示提示框'); // 调试信息
         setTimeout(() => {
-            window.open('https://hi.imfog.com', '_blank');
+            showNavigationPrompt();
         }, 10000);
     </script>
 </body>
