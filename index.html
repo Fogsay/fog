@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    
+
     <!-- 配置Tailwind自定义颜色和字体 -->
     <script>
         tailwind.config = {
@@ -40,15 +41,15 @@
                             '50%': { opacity: '0.6' }
                         },
                         borderPulse: {
-                            '0%, 100%': { border-color: 'rgba(0, 200, 255, 0.5)' },
-                            '50%': { border-color: 'rgba(0, 200, 255, 0.9)' }
-                        }
-                    }
+                            '0%, 100%': { border- color: 'rgba(0, 200, 255, 0.5)' },
+                        '50%': { border- color: 'rgba(0, 200, 255, 0.9)' }
                 }
             }
         }
+            }
+        }
     </script>
-    
+
     <!-- 自定义工具类 -->
     <style type="text/tailwindcss">
         @layer utilities {
@@ -57,17 +58,17 @@
             }
         }
     </style>
-    
+
     <style>
         /* 导入圆润字体 */
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap');
-        
+
         /* 基础样式 */
         body {
             overflow: hidden;
             background-color: #050505;
         }
-        
+
         /* 打字容器样式 */
         .typing-container {
             position: relative;
@@ -77,7 +78,7 @@
         /* 文字雾化效果 */
         #typed-text {
             opacity: 0.5;
-            text-shadow: 
+            text-shadow:
                 0 0 15px rgba(255, 255, 255, 0.3),
                 0 0 30px rgba(200, 200, 220, 0.2),
                 0 0 45px rgba(180, 180, 200, 0.15);
@@ -87,13 +88,95 @@
         /* 红色文字特殊雾化效果 */
         .text-red {
             color: rgba(255, 0, 0, 0.6) !important;
-            text-shadow: 
+            text-shadow:
                 0 0 12px rgba(255, 0, 0, 0.3),
                 0 0 25px rgba(255, 100, 100, 0.2),
                 0 0 35px rgba(255, 150, 150, 0.15) !important;
         }
 
-        /* 落叶容器 */
+        /* 优化后的雾气背景 - 使用CSS变量和transform3d优化性能 */
+        .fog-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            will-change: transform;
+        }
+
+        /* 主雾气层 - 简化版本 */
+        .fog-layer-1 {
+            position: absolute;
+            top: -20%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            background:
+                radial-gradient(circle at 30% 40%, rgba(200, 200, 220, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 70% 60%, rgba(180, 180, 200, 0.06) 0%, transparent 45%);
+            filter: blur(8px);
+            animation: fogDrift1 60s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        .fog-layer-2 {
+            position: absolute;
+            top: -30%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background:
+                radial-gradient(circle at 20% 70%, rgba(190, 190, 210, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 30%, rgba(170, 170, 190, 0.04) 0%, transparent 55%);
+            filter: blur(12px);
+            animation: fogDrift2 80s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        /* 优化的动画 - 使用transform3d */
+        @keyframes fogDrift1 {
+            0% {
+                transform: translate3d(-2%, -1%, 0) rotate(0deg);
+            }
+
+            25% {
+                transform: translate3d(1%, -3%, 0) rotate(0.2deg);
+            }
+
+            50% {
+                transform: translate3d(3%, 1%, 0) rotate(-0.1deg);
+            }
+
+            75% {
+                transform: translate3d(-1%, 2%, 0) rotate(0.3deg);
+            }
+
+            100% {
+                transform: translate3d(-2%, -1%, 0) rotate(0deg);
+            }
+        }
+
+        @keyframes fogDrift2 {
+            0% {
+                transform: translate3d(0%, 0%, 0) rotate(0deg);
+            }
+
+            33% {
+                transform: translate3d(-2%, 1%, 0) rotate(0.1deg);
+            }
+
+            66% {
+                transform: translate3d(-4%, -1%, 0) rotate(-0.2deg);
+            }
+
+            100% {
+                transform: translate3d(-6%, 0%, 0) rotate(0deg);
+            }
+        }
+
+        /* 简化的落叶效果 */
         .falling-leaves {
             position: fixed;
             top: 0;
@@ -105,358 +188,149 @@
             overflow: hidden;
         }
 
-        /* 落叶样式 */
         .leaf {
             position: absolute;
-            width: 12px;
-            height: 12px;
-            background: linear-gradient(45deg, 
-                rgba(218, 165, 32, 0.7) 0%, 
-                rgba(184, 134, 11, 0.8) 30%, 
-                rgba(139, 69, 19, 0.6) 70%, 
-                rgba(160, 82, 45, 0.5) 100%);
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(45deg,
+                    rgba(218, 165, 32, 0.6) 0%,
+                    rgba(184, 134, 11, 0.7) 50%,
+                    rgba(139, 69, 19, 0.5) 100%);
             border-radius: 0 100% 0 100%;
             filter: blur(0.5px);
             animation: leafFall linear infinite;
+            will-change: transform;
         }
 
         .leaf:nth-child(2n) {
-            background: linear-gradient(45deg, 
-                rgba(205, 133, 63, 0.6) 0%, 
-                rgba(210, 180, 140, 0.7) 40%, 
-                rgba(188, 143, 143, 0.5) 100%);
+            background: linear-gradient(45deg,
+                    rgba(205, 133, 63, 0.5) 0%,
+                    rgba(210, 180, 140, 0.6) 100%);
             border-radius: 100% 0 100% 0;
         }
 
         .leaf:nth-child(3n) {
-            background: linear-gradient(45deg, 
-                rgba(255, 140, 0, 0.6) 0%, 
-                rgba(255, 165, 0, 0.7) 50%, 
-                rgba(255, 69, 0, 0.5) 100%);
+            background: linear-gradient(45deg,
+                    rgba(255, 140, 0, 0.5) 0%,
+                    rgba(255, 165, 0, 0.6) 100%);
             border-radius: 50% 0 50% 0;
         }
 
-        .leaf:nth-child(4n) {
-            background: linear-gradient(45deg, 
-                rgba(178, 34, 34, 0.5) 0%, 
-                rgba(220, 20, 60, 0.6) 60%, 
-                rgba(139, 0, 0, 0.4) 100%);
-            border-radius: 0 50% 0 50%;
-        }
-
-        /* 落叶动画 */
+        /* 优化的落叶动画 */
         @keyframes leafFall {
             0% {
+                transform: translate3d(0, -10vh, 0) rotate(0deg);
                 opacity: 1;
             }
-            20% {
-                transform: translateY(20vh) translateX(-20px) rotate(45deg);
-                opacity: 0.9;
-            }
-            40% {
-                transform: translateY(40vh) translateX(30px) rotate(90deg);
+
+            25% {
+                transform: translate3d(-15px, 25vh, 0) rotate(90deg);
                 opacity: 0.8;
             }
-            60% {
-                transform: translateY(60vh) translateX(-10px) rotate(180deg);
-                opacity: 0.7;
-            }
-            80% {
-                transform: translateY(80vh) translateX(20px) rotate(270deg);
+
+            50% {
+                transform: translate3d(20px, 50vh, 0) rotate(180deg);
                 opacity: 0.6;
             }
-            95% {
-                opacity: 0.3;
+
+            75% {
+                transform: translate3d(-10px, 75vh, 0) rotate(270deg);
+                opacity: 0.4;
             }
+
             100% {
-                transform: translateY(110vh) translateX(-30px) rotate(360deg);
+                transform: translate3d(15px, 110vh, 0) rotate(360deg);
                 opacity: 0;
             }
         }
 
-        /* 不同大小的落叶 */
-        .leaf.small {
-            width: 8px;
-            height: 8px;
-            filter: blur(1px);
-        }
-
-        .leaf.medium {
-            width: 10px;
-            height: 10px;
-            filter: blur(0.8px);
-        }
-
-        .leaf.large {
-            width: 14px;
-            height: 14px;
-            filter: blur(0.3px);
-        }
-
-        /* 自然雾气基础层 */
-        .dense-fog {
+        /* 边缘渐变遮罩 */
+        .fog-vignette {
             position: fixed;
-            top: -30%;
-            left: -30%;
-            width: 160%;
-            height: 160%;
-            background: 
-                radial-gradient(circle at 25% 35%, rgba(200, 200, 220, 0.12) 0%, rgba(180, 180, 200, 0.08) 25%, transparent 50%),
-                radial-gradient(circle at 75% 65%, rgba(190, 190, 210, 0.1) 0%, rgba(170, 170, 190, 0.06) 30%, transparent 55%),
-                radial-gradient(circle at 45% 15%, rgba(210, 210, 230, 0.08) 0%, transparent 45%),
-                radial-gradient(circle at 85% 85%, rgba(160, 160, 180, 0.09) 0%, transparent 40%);
-            filter: blur(8px);
-            animation: naturalFogDrift 50s ease-in-out infinite;
-            z-index: 1;
-        }
-
-        @keyframes naturalFogDrift {
-            0% { 
-                transform: translateX(-3%) translateY(-2%) rotate(0deg);
-                opacity: 0.7;
-            }
-            25% { 
-                transform: translateX(2%) translateY(-4%) rotate(0.5deg);
-                opacity: 0.8;
-            }
-            50% { 
-                transform: translateX(4%) translateY(1%) rotate(-0.3deg);
-                opacity: 0.9;
-            }
-            75% { 
-                transform: translateX(-1%) translateY(3%) rotate(0.4deg);
-                opacity: 0.75;
-            }
-            100% { 
-                transform: translateX(-3%) translateY(-2%) rotate(0deg);
-                opacity: 0.7;
-            }
-        }
-
-        /* 流动雾气 */
-        .fog-clouds {
-            position: fixed;
-            top: -40%;
-            left: -40%;
-            width: 180%;
-            height: 180%;
-            background: 
-                radial-gradient(circle at 30% 20%, rgba(220, 220, 240, 0.15) 0%, rgba(200, 200, 220, 0.08) 20%, transparent 45%),
-                radial-gradient(circle at 70% 80%, rgba(210, 210, 230, 0.12) 0%, rgba(190, 190, 210, 0.06) 25%, transparent 50%),
-                radial-gradient(circle at 10% 60%, rgba(200, 200, 220, 0.1) 0%, rgba(180, 180, 200, 0.05) 22%, transparent 48%),
-                radial-gradient(circle at 90% 40%, rgba(190, 190, 210, 0.11) 0%, rgba(170, 170, 190, 0.04) 28%, transparent 52%);
-            filter: blur(12px);
-            animation: cloudFlow 70s linear infinite;
-            z-index: 2;
-        }
-
-        @keyframes cloudFlow {
-            0% { transform: translateX(0) translateY(0) rotate(0deg); }
-            100% { transform: translateX(-5%) translateY(-3%) rotate(0.5deg); }
-        }
-
-        /* 环境雾气 */
-        .mist-flow {
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 40% 30%, rgba(180, 180, 200, 0.08) 0%, transparent 35%),
-                radial-gradient(circle at 60% 70%, rgba(200, 200, 220, 0.06) 0%, transparent 40%),
-                radial-gradient(circle at 20% 80%, rgba(190, 190, 210, 0.07) 0%, transparent 38%),
-                radial-gradient(circle at 80% 20%, rgba(170, 170, 190, 0.05) 0%, transparent 42%);
-            filter: blur(15px);
-            animation: ambientMist 80s ease-in-out infinite;
-            z-index: 1;
-        }
-
-        @keyframes ambientMist {
-            0% { 
-                transform: translateX(0) translateY(0) scale(1) rotate(0deg);
-                opacity: 0.6;
-            }
-            20% { 
-                transform: translateX(-2%) translateY(1%) scale(1.02) rotate(0.1deg);
-                opacity: 0.7;
-            }
-            40% { 
-                transform: translateX(-4%) translateY(-1%) scale(1.05) rotate(-0.2deg);
-                opacity: 0.8;
-            }
-            60% { 
-                transform: translateX(-6%) translateY(2%) scale(1.03) rotate(0.3deg);
-                opacity: 0.75;
-            }
-            80% { 
-                transform: translateX(-8%) translateY(-2%) scale(1.01) rotate(-0.1deg);
-                opacity: 0.65;
-            }
-            100% { 
-                transform: translateX(-10%) translateY(0%) scale(1) rotate(0deg);
-                opacity: 0.6;
-            }
-        }
-
-        /* 大气雾气遮罩 */
-        .fog-veil {
-            position: fixed;
-            top: -25%;
-            left: -25%;
-            width: 150%;
-            height: 150%;
-            background: 
-                radial-gradient(circle at 50% 50%, transparent 10%, rgba(150, 150, 170, 0.04) 30%, rgba(130, 130, 150, 0.08) 60%, rgba(110, 110, 130, 0.12) 90%);
-            animation: atmosphericPulse 35s ease-in-out infinite;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 20%, rgba(5, 5, 5, 0.3) 80%);
+            pointer-events: none;
             z-index: 3;
-        }
-
-        @keyframes atmosphericPulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
-        }
-
-        /* 边缘雾气淡化 */
-        .fog-edges {
-            position: fixed;
-            top: -15%;
-            left: -15%;
-            width: 130%;
-            height: 130%;
-            background: 
-                radial-gradient(circle at 0% 50%, rgba(140, 140, 160, 0.2) 0%, transparent 40%),
-                radial-gradient(circle at 100% 50%, rgba(140, 140, 160, 0.2) 0%, transparent 40%),
-                radial-gradient(circle at 50% 0%, rgba(140, 140, 160, 0.18) 0%, transparent 45%),
-                radial-gradient(circle at 50% 100%, rgba(140, 140, 160, 0.18) 0%, transparent 45%);
-            filter: blur(6px);
-            z-index: 2;
-        }
-
-        /* 深层大气 */
-        .deep-mist {
-            position: fixed;
-            top: -35%;
-            left: -35%;
-            width: 170%;
-            height: 170%;
-            background: 
-                radial-gradient(circle at 35% 45%, rgba(120, 120, 140, 0.1) 0%, transparent 35%),
-                radial-gradient(circle at 65% 55%, rgba(130, 130, 150, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 50% 25%, rgba(110, 110, 130, 0.09) 0%, transparent 38%);
-            filter: blur(20px);
-            animation: deepAtmosphere 90s ease-in-out infinite;
-            z-index: 1;
-        }
-
-        @keyframes deepAtmosphere {
-            0% { 
-                transform: translateX(0) translateY(0) scale(1) rotate(0deg);
-                opacity: 0.5;
-            }
-            25% { 
-                transform: translateX(-1%) translateY(-2%) scale(1.05) rotate(0.2deg);
-                opacity: 0.6;
-            }
-            50% { 
-                transform: translateX(-3%) translateY(1%) scale(1.1) rotate(0.5deg);
-                opacity: 0.7;
-            }
-            75% { 
-                transform: translateX(-5%) translateY(-1%) scale(1.08) rotate(0.3deg);
-                opacity: 0.65;
-            }
-            100% { 
-                transform: translateX(-7%) translateY(-3%) scale(1.02) rotate(0.1deg);
-                opacity: 0.5;
-            }
-        }
-
-        /* 快速流动雾气层 */
-        .flowing-mist {
-            position: fixed;
-            top: -60%;
-            left: -60%;
-            width: 220%;
-            height: 220%;
-            background: 
-                radial-gradient(circle at 15% 25%, rgba(160, 160, 180, 0.06) 0%, transparent 30%),
-                radial-gradient(circle at 85% 75%, rgba(180, 180, 200, 0.05) 0%, transparent 35%),
-                radial-gradient(circle at 50% 10%, rgba(170, 170, 190, 0.04) 0%, transparent 32%),
-                radial-gradient(circle at 30% 90%, rgba(150, 150, 170, 0.07) 0%, transparent 28%);
-            filter: blur(25px);
-            animation: fastFlow 40s linear infinite;
-            z-index: 1;
-        }
-
-        @keyframes fastFlow {
-            0% { 
-                transform: translateX(-15%) translateY(-10%) rotate(0deg);
-                opacity: 0.4;
-            }
-            25% { 
-                transform: translateX(-10%) translateY(-5%) rotate(0.3deg);
-                opacity: 0.6;
-            }
-            50% { 
-                transform: translateX(-5%) translateY(0%) rotate(0.6deg);
-                opacity: 0.5;
-            }
-            75% { 
-                transform: translateX(0%) translateY(5%) rotate(0.9deg);
-                opacity: 0.7;
-            }
-            100% { 
-                transform: translateX(5%) translateY(10%) rotate(1.2deg);
-                opacity: 0.4;
-            }
         }
 
         /* 移动端适配 */
         @media (max-width: 640px) {
+
             .fixed.top-4.left-4,
             .fixed.bottom-4.right-4 {
                 width: 12px;
                 height: 12px;
             }
+
+            /* 移动端减少动画复杂度 */
+            .fog-layer-1,
+            .fog-layer-2 {
+                filter: blur(6px);
+            }
+        }
+
+        /* 减少动画在低性能设备上的影响 */
+        @media (prefers-reduced-motion: reduce) {
+
+            .fog-layer-1,
+            .fog-layer-2,
+            .leaf {
+                animation-duration: 120s;
+            }
+        }
+
+        /* 音乐提示动画 */
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            20% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
         }
     </style>
 </head>
+
 <body class="font-sans text-light min-h-screen flex items-center justify-center relative p-4">
-    <!-- 浓雾背景层 -->
-    <div class="dense-fog"></div>
-    
-    <!-- 深层雾气 -->
-    <div class="deep-mist"></div>
-    
-    <!-- 快速流动雾气 -->
-    <div class="flowing-mist"></div>
-    
-    <!-- 迷雾流动 -->
-    <div class="mist-flow"></div>
-    
-    <!-- 雾气云团 -->
-    <div class="fog-clouds"></div>
-    
-    <!-- 雾气遮罩 -->
-    <div class="fog-veil"></div>
-    
-    <!-- 雾气边缘 -->
-    <div class="fog-edges"></div>
-    
+    <!-- 优化后的雾气背景 -->
+    <div class="fog-background">
+        <div class="fog-layer-1"></div>
+        <div class="fog-layer-2"></div>
+    </div>
+
+    <!-- 边缘渐变 -->
+    <div class="fog-vignette"></div>
+
     <!-- 落叶效果 -->
     <div class="falling-leaves" id="falling-leaves"></div>
-    
+
     <!-- 角落装饰元素 -->
     <div class="fixed top-4 left-4 w-12 md:w-16 h-12 md:h-16 border-t-2 border-l-2 border-accent/30"></div>
     <div class="fixed bottom-4 right-4 w-12 md:w-16 h-12 md:h-16 border-b-2 border-r-2 border-accent/30"></div>
-    
+
     <!-- 隐藏的背景音乐 -->
     <audio id="background-music" loop preload="auto" style="display: none;">
         <source src="https://cdn.pixabay.com/audio/2025/03/19/audio_56ae1dae5f.mp3" type="audio/mpeg">
-
         <!-- 备用音乐链接 -->
-        <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/Creative_Commons/Chad_Crouch/Arps/Chad_Crouch_-_Shipping_Lanes.mp3" type="audio/mpeg">
+        <source
+            src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/Creative_Commons/Chad_Crouch/Arps/Chad_Crouch_-_Shipping_Lanes.mp3"
+            type="audio/mpeg">
     </audio>
 
     <!-- 音乐控制按钮 -->
@@ -485,143 +359,125 @@
         <!-- 标题区域 -->
         <div class="mb-6 overflow-visible">
             <div class="typing-container">
-                <div id="typed-text" class="text-[clamp(2rem,8vw,7rem)] font-rounded font-bold text-white text-shadow leading-none inline-block"></div>
+                <div id="typed-text"
+                    class="text-[clamp(2rem,8vw,7rem)] font-rounded font-bold text-white text-shadow leading-none inline-block">
+                </div>
             </div>
         </div>
-        
+
         <!-- 简短描述 -->
-        <p class="text-gray-400 uppercase tracking-widest text-xs sm:text-sm mb-8 md:mb-12 opacity-0 animate-fade-in-up" style="animation-delay: 2.8s;">
+        <p class="text-gray-400 uppercase tracking-widest text-xs sm:text-sm mb-8 md:mb-12 opacity-0 animate-fade-in-up"
+            style="animation-delay: 2.8s;">
             EXPLORING DIGITAL FRONTIERS
         </p>
-        
+
         <!-- 互动按钮 -->
         <div class="opacity-0 animate-fade-in-up" style="animation-delay: 3.2s;">
-            <button id="enter-button" class="group relative px-6 py-3 sm:px-8 sm:py-3 border border-accent/50 text-accent uppercase tracking-wider text-sm hover:bg-accent hover:text-dark transition-all duration-300 overflow-hidden">
+            <button id="enter-button"
+                class="group relative px-6 py-3 sm:px-8 sm:py-3 border border-accent/50 text-accent uppercase tracking-wider text-sm hover:bg-accent hover:text-dark transition-all duration-300 overflow-hidden">
                 <span class="relative z-10 flex items-center justify-center">
                     ENTER
                     <i class="fa fa-chevron-right ml-2 group-hover:ml-3 transition-all"></i>
                 </span>
-                <span class="absolute inset-0 w-0 h-full bg-accent/10 group-hover:w-full transition-all duration-300"></span>
+                <span
+                    class="absolute inset-0 w-0 h-full bg-accent/10 group-hover:w-full transition-all duration-300"></span>
             </button>
         </div>
     </div>
 
     <script>
-        // 创建落叶效果
+        // 优化的落叶效果 - 减少DOM操作
         function createFallingLeaves() {
             const leavesContainer = document.getElementById('falling-leaves');
-            const leafCount = 18;
-            
+            const leafCount = 12; // 减少叶子数量
+
+            // 预创建叶子池
+            const leafPool = [];
+
             for (let i = 0; i < leafCount; i++) {
                 const leaf = document.createElement('div');
                 leaf.className = 'leaf';
-                
-                // 随机大小
-                const sizes = ['small', 'medium', 'large'];
-                const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
-                leaf.classList.add(randomSize);
-                
+
                 // 随机水平位置
                 leaf.style.left = Math.random() * 100 + '%';
-                
-                // 随机起始高度
-                const startHeight = Math.random() * 100 - 50;
-                leaf.style.top = startHeight + 'vh';
-                
+                leaf.style.top = '-10vh';
+
                 // 随机动画持续时间
-                const duration = Math.random() * 8 + 12;
+                const duration = Math.random() * 6 + 10; // 缩短动画时间
                 leaf.style.animationDuration = duration + 's';
-                leaf.style.animationDelay = '0s';
-                
+                leaf.style.animationDelay = Math.random() * 5 + 's';
+
                 leavesContainer.appendChild(leaf);
+                leafPool.push({ element: leaf, duration: duration });
             }
-            
-            // 定期添加新的落叶
+
+            // 定期重置叶子位置而不是创建新的
             setInterval(() => {
-                if (leavesContainer.children.length < 25) {
-                    const newLeaf = document.createElement('div');
-                    newLeaf.className = 'leaf';
-                    
-                    const sizes = ['small', 'medium', 'large'];
-                    const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
-                    newLeaf.classList.add(randomSize);
-                    
-                    newLeaf.style.left = Math.random() * 100 + '%';
-                    newLeaf.style.top = '-10vh';
-                    
-                    const duration = Math.random() * 8 + 12;
-                    newLeaf.style.animationDuration = duration + 's';
-                    newLeaf.style.animationDelay = '0s';
-                    
-                    leavesContainer.appendChild(newLeaf);
-                    
-                    // 动画结束后移除叶子
-                    setTimeout(() => {
-                        if (newLeaf.parentNode) {
-                            newLeaf.parentNode.removeChild(newLeaf);
-                        }
-                    }, duration * 1000 + 1000);
-                }
-            }, 2000);
+                leafPool.forEach(leafData => {
+                    const leaf = leafData.element;
+                    leaf.style.left = Math.random() * 100 + '%';
+                    leaf.style.animationDelay = '0s';
+                });
+            }, 8000);
         }
 
-        // 打字效果实现
-        document.addEventListener('DOMContentLoaded', function() {
+        // 优化的打字效果 - 使用requestAnimationFrame
+        document.addEventListener('DOMContentLoaded', function () {
             // 创建落叶效果
             createFallingLeaves();
-            
+
             const englishSegments = [
                 "I'M ",
                 { content: "FOG", color: "text-red" },
                 "WALKER"
             ];
-            
+
             const chineseSegments = [
                 "我是",
                 { content: "雾", color: "text-red" },
                 "行者"
             ];
-            
+
             const typedElement = document.getElementById('typed-text');
             let segmentIndex = 0;
             let charIndex = 0;
             let isEnglishPhase = true;
             const displayDuration = 2500;
-            
-            // 动态打字速度
+            let animationId;
+
+            // 使用更稳定的打字速度
             function getTypingDelay() {
-                const baseDelay = 80;
-                const randomVariation = Math.random() * 40;
-                return baseDelay + randomVariation;
+                return 100; // 固定延迟，避免随机性导致的不稳定
             }
-            
+
             function typeCharacter() {
                 const currentSegments = isEnglishPhase ? englishSegments : chineseSegments;
-                
+
                 if (segmentIndex < currentSegments.length) {
                     const currentSegment = currentSegments[segmentIndex];
-                    
+
                     if (typeof currentSegment === 'string') {
                         if (charIndex < currentSegment.length) {
                             const char = currentSegment.charAt(charIndex);
                             const span = document.createElement('span');
                             span.textContent = char;
                             span.style.opacity = '0';
-                            span.style.transform = 'translateY(5px)';
-                            span.style.transition = 'all 0.2s ease-out';
+                            span.style.transform = 'translateY(3px)';
+                            span.style.transition = 'all 0.15s ease-out';
                             typedElement.appendChild(span);
-                            
+
+                            // 使用requestAnimationFrame优化动画
                             requestAnimationFrame(() => {
                                 span.style.opacity = '1';
                                 span.style.transform = 'translateY(0)';
                             });
-                            
+
                             charIndex++;
                             setTimeout(typeCharacter, getTypingDelay());
                         } else {
                             segmentIndex++;
                             charIndex = 0;
-                            setTimeout(typeCharacter, getTypingDelay() + 50);
+                            setTimeout(typeCharacter, getTypingDelay() + 30);
                         }
                     } else {
                         if (charIndex < currentSegment.content.length) {
@@ -630,55 +486,53 @@
                             span.className = `${currentSegment.color} font-rounded`;
                             span.textContent = char;
                             span.style.opacity = '0';
-                            span.style.transform = 'translateY(5px)';
-                            span.style.transition = 'all 0.2s ease-out';
+                            span.style.transform = 'translateY(3px)';
+                            span.style.transition = 'all 0.15s ease-out';
                             typedElement.appendChild(span);
-                            
+
                             requestAnimationFrame(() => {
                                 span.style.opacity = '1';
                                 span.style.transform = 'translateY(0)';
                             });
-                            
+
                             charIndex++;
                             setTimeout(typeCharacter, getTypingDelay());
                         } else {
                             segmentIndex++;
                             charIndex = 0;
-                            setTimeout(typeCharacter, getTypingDelay() + 50);
+                            setTimeout(typeCharacter, getTypingDelay() + 30);
                         }
                     }
                 } else {
                     // 显示完成后切换
                     setTimeout(() => {
-                        typedElement.style.transition = 'opacity 0.5s ease-in-out, transform 0.5s ease-in-out';
+                        typedElement.style.transition = 'opacity 0.4s ease-in-out, transform 0.4s ease-in-out';
                         typedElement.style.opacity = '0';
-                        typedElement.style.transform = 'translateY(-10px)';
-                        
+                        typedElement.style.transform = 'translateY(-8px)';
+
                         setTimeout(() => {
                             typedElement.innerHTML = '';
                             typedElement.style.opacity = '0.5';
                             typedElement.style.transform = 'translateY(0)';
-                            
+
                             isEnglishPhase = !isEnglishPhase;
                             segmentIndex = 0;
                             charIndex = 0;
-                            
-                            setTimeout(typeCharacter, 500);
-                        }, 500);
+
+                            setTimeout(typeCharacter, 400);
+                        }, 400);
                     }, displayDuration);
                 }
             }
-            
+
             setTimeout(() => {
-                requestAnimationFrame(typeCharacter);
+                typeCharacter();
             }, 600);
         });
-
         // 创建交互式提示框
         function showNavigationPrompt() {
-            console.log('显示导航提示框'); // 调试信息
-            
-            // 创建提示框容器
+            console.log('显示导航提示框');
+
             const promptContainer = document.createElement('div');
             promptContainer.id = 'navigation-prompt';
             promptContainer.style.cssText = `
@@ -694,8 +548,7 @@
                 border-top: 1px solid rgba(0, 200, 255, 0.3);
                 padding: 20px;
             `;
-            
-            // 提示框内容
+
             promptContainer.innerHTML = `
                 <div style="max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
                     <div style="text-align: left;">
@@ -725,36 +578,32 @@
                     </div>
                 </div>
             `;
-            
+
             document.body.appendChild(promptContainer);
-            
-            // 显示动画
+
             setTimeout(() => {
                 promptContainer.style.transform = 'translateY(0)';
             }, 100);
-            
-            // 绑定事件
+
             document.getElementById('confirm-nav').addEventListener('click', () => {
-                console.log('用户点击确认'); // 调试信息
+                console.log('用户点击确认');
                 window.open('https://hi.imfog.com', '_blank');
                 hideNavigationPrompt();
             });
-            
+
             document.getElementById('cancel-nav').addEventListener('click', () => {
-                console.log('用户点击取消'); // 调试信息
+                console.log('用户点击取消');
                 hideNavigationPrompt();
             });
-            
-            // 10秒后自动隐藏
+
             setTimeout(() => {
                 if (document.getElementById('navigation-prompt')) {
-                    console.log('自动隐藏提示框'); // 调试信息
+                    console.log('自动隐藏提示框');
                     hideNavigationPrompt();
                 }
             }, 100000);
         }
 
-        // 隐藏提示框
         function hideNavigationPrompt() {
             const promptContainer = document.getElementById('navigation-prompt');
             if (promptContainer) {
@@ -773,7 +622,6 @@
         const musicControl = document.getElementById('music-control');
         const musicIcon = document.getElementById('music-icon');
 
-        // 音乐控制功能
         function toggleMusic() {
             if (isPlaying) {
                 backgroundMusic.pause();
@@ -793,7 +641,6 @@
                     console.log('音乐开始播放');
                 }).catch(error => {
                     console.log('音乐播放失败:', error);
-                    // 如果自动播放失败，显示提示
                     musicControl.style.background = 'rgba(160, 160, 160, 0.2)';
                     musicControl.style.borderColor = 'rgba(180, 180, 180, 0.4)';
                     musicIcon.style.color = '#a0a0a0';
@@ -802,40 +649,79 @@
             }
         }
 
-        // 绑定音乐控制按钮事件
         musicControl.addEventListener('click', toggleMusic);
 
-        // 绑定ENTER按钮事件，点击时开始播放音乐
         const enterButton = document.getElementById('enter-button');
         let musicStarted = false;
-        
-        enterButton.addEventListener('click', () => {
-            console.log('用户点击ENTER按钮，开始播放音乐');
-            if (!musicStarted && !isPlaying) {
-                toggleMusic();
-                musicStarted = true;
-            }
-        });
 
-        // 监听任何用户交互来启动音乐（一次性）
-        function startMusicOnFirstInteraction() {
+        // 自动播放音乐的函数
+        function startMusicAutomatically() {
             if (!musicStarted && !isPlaying) {
                 console.log('检测到用户交互，自动开始播放音乐');
-                toggleMusic();
-                musicStarted = true;
-                // 移除事件监听器，只执行一次
-                document.removeEventListener('click', startMusicOnFirstInteraction);
-                document.removeEventListener('keydown', startMusicOnFirstInteraction);
-                document.removeEventListener('touchstart', startMusicOnFirstInteraction);
+                backgroundMusic.play().then(() => {
+                    musicIcon.className = 'fa fa-volume-up';
+                    musicControl.style.background = 'rgba(180, 180, 180, 0.2)';
+                    musicControl.style.borderColor = 'rgba(200, 200, 200, 0.4)';
+                    musicIcon.style.color = '#c0c0c0';
+                    isPlaying = true;
+                    musicStarted = true;
+                    console.log('音乐自动播放成功');
+                    // 移除所有事件监听器
+                    removeAllMusicListeners();
+                }).catch(error => {
+                    console.log('音乐播放失败:', error);
+                });
             }
         }
 
-        // 添加多种交互事件监听
-        document.addEventListener('click', startMusicOnFirstInteraction);
-        document.addEventListener('keydown', startMusicOnFirstInteraction);
-        document.addEventListener('touchstart', startMusicOnFirstInteraction);
+        // 移除所有音乐相关的事件监听器
+        function removeAllMusicListeners() {
+            document.removeEventListener('click', startMusicAutomatically);
+            document.removeEventListener('keydown', startMusicAutomatically);
+            document.removeEventListener('touchstart', startMusicAutomatically);
+            document.removeEventListener('mousemove', startMusicAutomatically);
+            document.removeEventListener('mouseenter', startMusicAutomatically);
+            document.removeEventListener('scroll', startMusicAutomatically);
+            document.removeEventListener('touchmove', startMusicAutomatically);
+            window.removeEventListener('focus', startMusicAutomatically);
+        }
 
-        // 音乐控制按钮悬停效果
+        // 添加多种交互事件监听，让音乐在任何用户交互时自动播放
+        document.addEventListener('click', startMusicAutomatically);
+        document.addEventListener('keydown', startMusicAutomatically);
+        document.addEventListener('touchstart', startMusicAutomatically);
+        document.addEventListener('mousemove', startMusicAutomatically);
+        document.addEventListener('mouseenter', startMusicAutomatically);
+        document.addEventListener('scroll', startMusicAutomatically);
+        document.addEventListener('touchmove', startMusicAutomatically);
+        window.addEventListener('focus', startMusicAutomatically);
+
+        enterButton.addEventListener('click', () => {
+            console.log('用户点击ENTER按钮');
+            // ENTER按钮点击时也会触发音乐播放（通过上面的click事件）
+        });
+
+        // 尝试在页面加载时自动播放音乐
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (!musicStarted && !isPlaying) {
+                    console.log('尝试页面加载后自动播放音乐...');
+                    backgroundMusic.play().then(() => {
+                        console.log('页面加载后自动播放成功');
+                        musicIcon.className = 'fa fa-volume-up';
+                        musicControl.style.background = 'rgba(180, 180, 180, 0.2)';
+                        musicControl.style.borderColor = 'rgba(200, 200, 200, 0.4)';
+                        musicIcon.style.color = '#c0c0c0';
+                        isPlaying = true;
+                        musicStarted = true;
+                        removeAllMusicListeners();
+                    }).catch(error => {
+                        console.log('页面加载后自动播放被浏览器阻止，等待用户交互:', error);
+                    });
+                }
+            }, 500);
+        });
+
         musicControl.addEventListener('mouseenter', () => {
             musicControl.style.transform = 'scale(1.1)';
             musicControl.style.boxShadow = '0 0 15px rgba(180, 180, 180, 0.3)';
@@ -846,11 +732,11 @@
             musicControl.style.boxShadow = 'none';
         });
 
-        // 10秒后显示交互式提示框
-        console.log('页面加载完成，10秒后显示提示框'); // 调试信息
+        console.log('页面加载完成，10秒后显示提示框');
         setTimeout(() => {
             showNavigationPrompt();
         }, 10000);
     </script>
 </body>
+
 </html>
