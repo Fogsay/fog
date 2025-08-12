@@ -1013,25 +1013,26 @@
             document.getElementById('confirm-nav').addEventListener('click', () => {
                 console.log('用户点击确认');
                 window.open('https://hi.imfog.com', '_blank');
-                hideNavigationPrompt();
+                hideNavigationPrompt(true); // 停止轮询
             });
 
             document.getElementById('cancel-nav').addEventListener('click', () => {
                 console.log('用户点击取消');
-                hideNavigationPrompt();
+                hideNavigationPrompt(true); // 停止轮询
             });
 
             setTimeout(() => {
                 if (document.getElementById('navigation-prompt')) {
                     console.log('自动隐藏提示框');
-                    hideNavigationPrompt();
+                    hideNavigationPrompt(false); // 自动关闭不停止轮询
                 }
-            }, 100000);
+            }, 20000); // 改为20秒后自动关闭
         }
 
         function hideNavigationPrompt() {
             const promptContainer = document.getElementById('navigation-prompt');
             if (promptContainer) {
+                console.log('隐藏提示框');
                 promptContainer.style.transform = 'translateY(100%)';
                 setTimeout(() => {
                     if (promptContainer.parentNode) {
@@ -1157,10 +1158,51 @@
             musicControl.style.boxShadow = 'none';
         });
 
-        console.log('页面加载完成，10秒后显示提示框');
-        setTimeout(() => {
-            showNavigationPrompt();
-        }, 10000);
+        // 优化的提示框轮询逻辑
+        let isFirstPrompt = true;
+        let promptCycleActive = true;
+        
+        function startPromptCycle() {
+            if (!promptCycleActive) return;
+            
+            if (isFirstPrompt) {
+                // 首次进入页面10秒后显示
+                console.log('页面加载完成，10秒后显示首次提示框');
+                setTimeout(() => {
+                    if (promptCycleActive) {
+                        showNavigationPrompt();
+                        isFirstPrompt = false;
+                        // 首次提示框会在20秒后自动关闭，关闭后立即安排下一轮
+                    }
+                }, 10000);
+            } else {
+                // 第二次开始，直接显示提示框
+                console.log('显示轮询提示框');
+                if (promptCycleActive) {
+                    showNavigationPrompt();
+                    // 这个提示框也会在20秒后自动关闭，关闭后安排下一轮
+                }
+            }
+        }
+        
+        // 修改hideNavigationPrompt，添加停止轮询的选项
+        const originalHideNavigationPrompt = hideNavigationPrompt;
+        hideNavigationPrompt = function(stopCycle = false) {
+            originalHideNavigationPrompt();
+            if (stopCycle) {
+                promptCycleActive = false;
+                console.log('提示框轮询已停止');
+            } else {
+                // 如果不停止轮询，20秒后安排下一轮显示
+                console.log('提示框关闭，20秒后显示下一轮');
+                setTimeout(() => {
+                    startPromptCycle();
+                }, 20000);
+            }
+        };
+        
+        // 启动提示框循环
+        startPromptCycle();
     </script>
 </body>
 
